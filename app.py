@@ -59,7 +59,10 @@ def save_frame(rtsp_url, token, output_path):
 app_ui = ui.page_fluid(
     ui.layout_sidebar(
         ui.h3("Murphy & Whitehall Railroad Crossing"),
-        ui.p('''This site shows a snapshot from a camera pointing at the railroad crossing at Murphy and Whitehall. Our hope is that you can use this site to inform your commuting plans, especially getting to the West End Marta Station.'''),
+        ui.p('''This site shows a snapshot from a camera pointing at the railroad crossing at Murphy and Whitehall. Our hope is that you can use this site to inform your commuting plans, especially getting to the West End Marta Station.
+             
+             We would like to thank CreateATL for the donation of this camera as well as the wifi and electricity to make all of this possible.
+             '''),
 
         ),
     ui.output_image("image")
