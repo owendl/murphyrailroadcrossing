@@ -2,3 +2,8 @@
 .Rhistory
 .RData
 .Ruserdata
+.Rprofile
+*.Rproj
+*.json
+rsconnect/
+*.jpg
