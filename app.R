@@ -51,6 +51,28 @@ server <- function(input, output, session) {
   CLEAR_FOLDER_ID <- creds$clear_folder_id
   FILENAME_PREFIX <- creds$image_prefix
   
+  
+  # Look for the latest thumbnail in Google Drive
+  latest_file <- drive_ls(as_id(GDRIVE_FOLDER_ID), pattern = FILENAME_PREFIX) %>%
+    drive_reveal("modified_time") %>%
+    arrange(desc(modified_time)) %>%
+    slice(1)
+  
+  # If the file is less than 60 seconds old, use it
+  if (nrow(latest_file) == 1) {
+    
+    temp_file <- tempfile(fileext = ".jpg")
+    drive_download(as_id(latest_file$id), path = temp_file, overwrite = TRUE)
+    
+    output$image_output <- renderUI({
+      tagList(
+        tags$p(paste("Loaded from Google Drive:", latest_file$name)),
+        tags$img(src = base64enc::dataURI(file = temp_file, mime = "image/jpeg"),
+                 width = "100%")
+      )
+    })
+    }
+  
   # Reactive value to track the current image and button state
   rv <- reactiveValues(
     current_image = NULL,  # Stores path or name of the current image
@@ -64,7 +86,8 @@ server <- function(input, output, session) {
     # Disable buttons during processing
     rv$buttons_enabled <- FALSE
     
-    ts <- format(Sys.time(), "%Y%m%d_%H%M%S")
+    ts <- format(.POSIXct(Sys.time(), "GMT") - 4*60*60
+                 , "%Y%m%d_%H%M%S")
     
     # Look for the latest thumbnail in Google Drive
     latest_file <- drive_ls(as_id(GDRIVE_FOLDER_ID), pattern = FILENAME_PREFIX) %>%
