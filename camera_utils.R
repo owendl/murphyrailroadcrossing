@@ -1,5 +1,6 @@
 library(httr)
 library(jsonlite)
+library(magick)
 
 # Load credentials
 creds <- fromJSON("murphy_camera_creds.json")
@@ -39,4 +40,11 @@ get_new_thumbnail <- function(creds, auth_token, filename) {
   } else {
     cat("Failed to download image. Status code:", status_code(response), "\n")
   }
+}
+
+# Get cropped image of thumbnail
+cropped_image_thumbnail <- function(filename){
+  img <- image_read(filename)
+  img_crop<- image_crop(img, "100x100+150+130")
+  return(img_crop)
 }

@@ -5,6 +5,7 @@ library(googledrive)
 library(googleAuthR)
 library(lubridate)
 library(dplyr)
+library(magick)
 
 source("camera_utils.R")  # Your functions
 
