@@ -86,8 +86,7 @@ server <- function(input, output, session) {
     # Disable buttons during processing
     rv$buttons_enabled <- FALSE
     
-    ts <- format(.POSIXct(Sys.time(), "GMT") - 4*60*60
-                 , "%Y%m%d_%H%M%S")
+    ts <- format(.POSIXct(Sys.time(), "US/Eastern"), "%Y%m%d_%H%M%S")
     
     # Look for the latest thumbnail in Google Drive
     latest_file <- drive_ls(as_id(GDRIVE_FOLDER_ID), pattern = FILENAME_PREFIX) %>%
