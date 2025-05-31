@@ -62,13 +62,12 @@ server <- function(input, output, session) {
   # If the file is less than 60 seconds old, use it
   if (nrow(latest_file) == 1) {
     
-    temp_file <- tempfile(fileext = ".jpg")
-    drive_download(as_id(latest_file$id), path = temp_file, overwrite = TRUE)
+    drive_download(as_id(latest_file$id), overwrite = TRUE)
     
     output$image_output <- renderUI({
       tagList(
         tags$p(paste("Loaded from Google Drive:", latest_file$name)),
-        tags$img(src = base64enc::dataURI(file = temp_file, mime = "image/jpeg"),
+        tags$img(src = base64enc::dataURI(file = cropped_image_thumbnail(latest_file$name), mime = "image/jpeg"),
                  width = "100%")
       )
     })
@@ -99,19 +98,19 @@ server <- function(input, output, session) {
     if (nrow(latest_file) == 1 &&
         difftime(Sys.time(), ymd_hms(latest_file$modified_time), units = "secs") < 60) {
       
-      temp_file <- tempfile(fileext = ".jpg")
-      drive_download(as_id(latest_file$id), path = temp_file, overwrite = TRUE)
+      
+      drive_download(as_id(latest_file$id),  overwrite = TRUE)
       
       output$image_output <- renderUI({
         tagList(
           tags$p(paste("Loaded from Google Drive:", latest_file$name)),
-          tags$img(src = base64enc::dataURI(file = temp_file, mime = "image/jpeg"),
+          tags$img(src = base64enc::dataURI(file = cropped_image_thumbnail(latest_file$name), mime = "image/jpeg"),
                    width = "100%")
         )
       })
       
       # Update reactive values
-      rv$current_image <- list(name = latest_file$name, path = temp_file)
+      rv$current_image <- list(name = latest_file$name, path = latest_file$name)
       rv$buttons_enabled <- TRUE
       
     } else {
@@ -140,7 +139,7 @@ server <- function(input, output, session) {
           output$image_output <- renderUI({
             tagList(
               tags$p(paste("Captured and uploaded at:", ts)),
-              tags$img(src = base64enc::dataURI(file = image_path, mime = "image/jpeg"),
+              tags$img(src = base64enc::dataURI(file = cropped_image_thumbnail(image_path), mime = "image/jpeg"),
                        width = "100%")
             )
           })

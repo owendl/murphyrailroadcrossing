@@ -46,5 +46,7 @@ get_new_thumbnail <- function(creds, auth_token, filename) {
 cropped_image_thumbnail <- function(filename){
   img <- image_read(filename)
   img_crop<- image_crop(img, "100x100+150+130")
-  return(img_crop)
+  cropped_filename = paste0("cropped_", filename)
+  image_write(img_crop, path =cropped_filename , format = "jpeg")
+  return(cropped_filename)
 }
