@@ -9,6 +9,8 @@ library(magick)
 
 source("camera_utils.R")  # Your functions
 
+addResourcePath("prefix", ".")
+
 # Authenticate with Service Account using googleAuthR
 options(googleAuthR.scopes.selected = "https://www.googleapis.com/auth/drive")
 gar_auth_service("googledrive_creds.json")
@@ -18,11 +20,26 @@ ui <- fluidPage(
   titlePanel("View of Murphy Railroad Crossing"),
   
   sidebarLayout(
-    sidebarPanel(h4("This site shows an image of the Murphy Railroad Crossing (near the intersectin of Murphy Ave Se, Lee St SW and W Whitehall St SW).")
-                 ,br(), h4("The image to right was taken at the time stamp listed above it. If you need a more recent image, click the Capture New Thumbnail button (please allow 5 seconds for the new image to appear).")
+    sidebarPanel(
+      tabsetPanel(
+      tabPanel("Intro & Capture New Image",
+      h4("This site shows an image of the Murphy Railroad Crossing (near the intersectin of Murphy Ave Se, Lee St SW and W Whitehall St SW).")
+                 ,br(), h4("The image to the right was taken at the time stamp listed above it. If you need a more recent image, click the Capture New Thumbnail button (please allow 5 seconds for the new image to appear).")
       ,actionButton("refresh", "Capture New Thumbnail")
-      ,h4("If you have captured a new image, please label it with Blocked or Clear buttons. Labeling this image puts the image will record it for future use.")
+      ,h4("If you have captured a new image, please label it with Blocked or Clear buttons. Labeling this image will record it for future use.")
+      ,br()
+      ,h4("Reference images of clear and blocked crossings are availale in the link above.")
                  ),
+      tabPanel("Reference Images", 
+               h4("Clear Crossing Example"),
+               img(src = 'prefix/cropped_clear_example.jpg', width = "95%")
+               ,br(), br()
+               ,h4("Blocked Crossing Example")
+               ,img(src = "prefix/cropped_blocked_example.jpg", width = "95%")
+               )      
+      )
+      ),
+    
     mainPanel(# Add buttons for Blocked and Clear Crossing (rendered dynamically)
       uiOutput("action_buttons")
       # Add loading spinner div (hidden by default)
@@ -60,7 +77,6 @@ server <- function(input, output, session) {
   BLOCKED_FOLDER_ID <- creds$blocked_folder_id
   CLEAR_FOLDER_ID <- creds$clear_folder_id
   FILENAME_PREFIX <- creds$image_prefix
-  
   
   # Look for the latest thumbnail in Google Drive
   latest_file <- drive_ls(as_id(GDRIVE_FOLDER_ID), pattern = FILENAME_PREFIX) %>%
