@@ -15,12 +15,19 @@ gar_auth_service("googledrive_creds.json")
 drive_auth(token = gar_token())
 
 ui <- fluidPage(
-  titlePanel("Murphy Camera Thumbnail Viewer"),
-  actionButton("refresh", "Capture New Thumbnail"),
-  br(), br(),
-  # Add loading spinner div (hidden by default)
-  div(id = "loading-spinner", style = "display: none; text-align: center;",
-      tags$div(class = "spinner", style = "
+  titlePanel("View of Murphy Railroad Crossing"),
+  
+  sidebarLayout(
+    sidebarPanel(h4("This site shows an image of the Murphy Railroad Crossing (near the intersectin of Murphy Ave Se, Lee St SW and W Whitehall St SW).")
+                 ,br(), h4("The image to right was taken at the time stamp listed above it. If you need a more recent image, click the Capture New Thumbnail button (please allow 5 seconds for the new image to appear).")
+      ,actionButton("refresh", "Capture New Thumbnail")
+      ,h4("If you have captured a new image, please label it with Blocked or Clear buttons. Labeling this image puts the image will record it for future use.")
+                 ),
+    mainPanel(# Add buttons for Blocked and Clear Crossing (rendered dynamically)
+      uiOutput("action_buttons")
+      # Add loading spinner div (hidden by default)
+      ,div(id = "loading-spinner", style = "display: none; text-align: center;",
+          tags$div(class = "spinner", style = "
         border: 4px solid #f3f3f3;
         border-top: 4px solid #3498db;
         border-radius: 50%;
@@ -29,17 +36,19 @@ ui <- fluidPage(
         animation: spin 1s linear infinite;
         margin: auto;
       ")
-  ),
-  # Add CSS for spinner animation
-  tags$style(HTML("
-    @keyframes spin {
-      0% { transform: rotate(0deg); }
-      100% { transform: rotate(360deg); }
-    }
-  ")),
-  uiOutput("image_output"),
-  # Add buttons for Blocked and Clear Crossing (rendered dynamically)
-  uiOutput("action_buttons")
+      )
+      # Add CSS for spinner animation
+      ,tags$style(HTML("
+          @keyframes spin {
+          0% { transform: rotate(0deg); }
+          100% { transform: rotate(360deg); }
+                }
+                ")
+            ),
+      uiOutput("image_output")
+      )
+    
+  )
 )
 
 server <- function(input, output, session) {
